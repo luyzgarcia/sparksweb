@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  descricao: MyText
+  inicio: 2015-04-06
+  termino: 2015-04-06
+  nivel_id: 
+
+two:
+  descricao: MyText
+  inicio: 2015-04-06
+  termino: 2015-04-06
+  nivel_id: 

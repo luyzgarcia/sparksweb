@@ -1,0 +1,117 @@
+<style>
+		html, body {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+	</style>
+	<script>
+		var myTree;
+		var perfil = '<%= current_user.role %>';
+		dhtmlxEvent(window,"load", function(){
+			var layout = new dhtmlXLayoutObject({
+				parent: document.body,
+				pattern: "3J"
+
+			});
+			layout.cells("a").setWidth(215);//sets the width of the 'form' cell
+			layout.cells("a").setText('Menu');
+		    var myMenu = layout.attachMenu({
+				icons_path: "assets/dhtmlx/",
+				items:[
+			        {id:"t1", text:"Controle de Acesso", img: 'date_magnify.png', items:[
+			        	{id:"lancar_registro", text:"Lançar Entrada/Saida Manualmente", img: 'door_in.png'},
+			          	{id:"consultar", text:"Consular Aluno", img: 'find.png'}
+			        ]},
+			        {id:"t3", text:"Professor", img: 'professor.png', items:[
+			        	{id:"item_contato", text:"Contato", img: 'telephone.png'}
+			        ]}
+			    ]
+			});
+			myMenu.attachEvent("onClick", function(id, zoneId, cas){
+				alert('clicou no botao:' + id);
+			});
+
+
+			var myMenu = layout.attachToolbar({
+				icons_path: "/assets/dhtmlx/",
+				items: [
+					{id: "titulo", type: "text", text: "Incomar - Sparks - Sistema de controle de acesso!"},
+					{id: "spacer1", type: "spacer"},
+					{id: "user_name", type: "text", text: "Bem vindo: <%= current_user.nome %>"},
+					{id: "nome_sistema", type: "text", text: "Sparks - 0.4"},
+					{id: "separador_1", type: "separator"},
+					{id:'logout', type: 'button', text: 'Sair'},
+					{id: "separador_2", type: "separator"},
+
+				]
+			});
+			myMenu.attachEvent('onClick', function(id, zoneId, cas) {
+				if(id == 'logout') {
+					dhtmlx.confirm({
+						title: "Tem certeza?",
+						text: "Tem certeza que deseja sair?",
+						callback: function(name) {
+							if(name) {
+								window.location.href = '<%= logout_path  %>';
+							}
+						}
+					});
+
+				}
+			});
+
+			myTree = layout.cells("a").attachTree();
+			layout.attachEvent("onContentLoaded", function(id){
+				layout.cells('b').progressOff();
+			});
+			myTree.setImagesPath("/assets/dhtmlx/dhxtree_skyblue/");
+			myTree.setXMLAutoLoading("menu_xml.xml");
+			myTree.setXMLAutoLoadingBehaviour("id");
+			myTree.enableSmartXMLParsing(true);
+			myTree.loadXML("menu_xml.xml");
+			myTree.attachEvent("onClick",  function(id){ //id -the id of the selected item
+			    console.log(id);
+			    myTree.openItem(id);
+			    if(isNaN(parseInt(id))) {
+			    	url = myTree.getUserData(id,'link').toString().trim();
+			    	//console.log(myTree.getUserData(id,'link'));
+			    	layout.cells('b').progressOn();
+					layout.cells('b').attachURL(url);
+				}
+				//console.log(layout.cells("a").getAttachedObject());
+				//teste();
+
+			});
+
+
+			var tabbar = layout.cells("b").attachTabbar({
+				icons_path: "/assets/dhtmlx/"
+			});
+			tabbar.enableTabCloseButton(true);
+
+			//Celular C
+			layout.cells("c").setHeight(270);
+			layout.cells("c").setText('Calendário');
+			layout.cells('c').attachURL('<%= calendario_path %>');
+
+		});
+		function getPerfil() {
+			return perfil;
+		}
+		function atualiza_menu() {
+			//Funcionando
+			var item = (myTree.getSelectedItemId());
+			myTree.saveOpenStates('state_menu');
+
+			myTree.refreshItem('0');
+			myTree.setOnLoadingEnd(function() {
+			   myTree.loadOpenStates('state_menu');
+			   myTree.selectItem(item, false, false);
+			});
+		}
+
+	</script>
+	<header><div id="menuObj"></div></header>
+	<div id="ribbonObj"></div>

@@ -1,0 +1,232 @@
+<%= csrf_meta_tags %>
+<script>
+	var layout;
+	var myForm;
+	dhtmlxEvent(window,"load", function(id){
+		//var layout = new dhtmlXLayoutObject(document.body, "2E");
+		layout = new dhtmlXLayoutObject(document.body, "1C");
+		
+		mygrid =  layout.cells("a").attachGrid();
+		mygrid.init();
+		//layout.cells("a").setText("Detalhes da série");//sets the form's header
+
+		var tabbar = layout.cells("a").attachTabbar({
+			icons_path: "/assets/dhtmlx/"
+		});
+		var tab = tabbar.addTab(
+	    'detalhes_nivel',       // id
+	    'Detalhes do nivel',    // tab text
+	    null,       // auto width
+	    null,       // last position
+	    false,      // inactive
+	    false       // disable close button <-- this one
+		);
+		//Seta a tab como ativa
+		tabbar.tabs('detalhes_nivel').setActive();
+
+		myToolbar = tabbar.tabs("detalhes_nivel").attachToolbar({
+			icons_path: "/assets/dhtmlx/",
+		    items:[
+		        {id: "save", type: "button", text: "Salvar alterações", img: "new.gif"},
+		    ],
+		     onClick:function(id){
+		    	if(id == 'save') {
+		    		salvar_alteracoes();
+		    	}
+		    }
+
+		});
+		
+		//Configura o formulario
+		formStructure = [
+		    {type:"settings",position:"label-top"},
+		    {type: "block", width: 900, name:'nivel', list:[
+			    {type: "fieldset",name:"nivel", width:900, label: "Detalhes", list:[
+			        {type: "hidden", name: 'id'},
+			        {type: "input", width: 300, name: 'titulo', label: 'Titulo:'},
+			        {type:"input", width: 300, name:"descricao", label:"Descrição:"},
+			        {type:"multiselect",label:"Dias de aula:", name:'dias_semana_letivo', inputHeight:130,inputWidth:130,
+					      options:[
+					        {text: "Domingo", value: "0"},
+					        {text: "Segunda-feira", value: "1"},
+					        {text: "Terça-feira", value: "2"},
+					        {text: "Quarta-feira", value: "3"},
+					        {text: "Quinta-feira", value: "4"},
+					        {text: "Sexta-feira", value: "5"},
+					        {text: "Sabado", value: "6"}
+					]},
+					{type:"container", name:"periodos", label:"Periodos", inputWidth:500, inputHeight:400},
+					{type:"container", name:"dias_naoletivos", label:"Dias não letivos", inputWidth:500, inputHeight:400},
+					{type:"container", name:"periodo_nao_letivos", label:"Calendario de férias", inputWidth:500, inputHeight:400},
+					{type: "button", name: "save", value: "Salvar mudanças"},
+			    ]}
+			 ]}
+		];
+
+
+		//Adiciona a tab com o formulario
+		myForm = tabbar.cells('detalhes_nivel').attachForm(formStructure);
+		myForm.attachEvent("onButtonClick", function(name, command) {
+			if(name == 'save') {
+				salvar_alteracoes();				
+			}
+		});
+		
+		//Carrega os dados no formulario
+		myForm.load('<%= edit_nivel_path(@nivel, :format => 'xml')  %>');
+		
+		
+		//Periodos
+		periodos = new dhtmlXLayoutObject(myForm.getContainer("periodos"),"1C");
+		periodos.cells('a').hideHeader();
+		periodos.cells('a').attachURL('periodos');
+
+
+		//Dias não letivos
+		dias_nao_letivos = new dhtmlXLayoutObject(myForm.getContainer("dias_naoletivos"),"1C");
+		dias_nao_letivos.cells('a').hideHeader();
+		dias_nao_letivos.cells('a').attachURL('dias_nao_letivos');
+		
+		//Calendario de férias(perido_nao_letivos)
+		ferias = new dhtmlXLayoutObject(myForm.getContainer("periodo_nao_letivos"),"1C");
+		ferias.cells('a').hideHeader();
+		ferias.cells('a').attachURL('periodo_nao_letivos');
+				 
+		 var tab_listagem = tabbar.addTab(
+		    'lista_series',       // id
+		    'Lista de series',    // tab text
+		    null,       // auto width
+		    null,       // last position
+		    false,      // inactive
+		    false       // disable close button <-- this one
+		);
+		
+		
+		mygrid =  tabbar.cells("lista_series").attachGrid();
+		mygrid.load("series.xml",'xml');
+		mygrid.enableAutoWidth(true);
+		mygrid.enableEditEvents(false,false,false);
+		mygrid.init();
+		
+		dp = new dataProcessor('<%= series_db_action_path %>');
+		dp.init(mygrid);
+		dp.setTransactionMode("POST");
+		//dp.setTransactionMode("GET", false);
+		dp.enableDataNames(true);
+		
+		
+		toolbar_grid = tabbar.cells("lista_series").attachToolbar({
+    		icons_path: "/assets/dhtmlx/",
+		    items:[
+		    	{id: "new_serie", type: "button", text: "Nova série ", img: "new.gif"},
+		        {id: "separator", type: "separator"},
+		        {id: "delete_serie", type: "button", text:'Excluir', img: "trash_delete.gif"},
+		    ],
+		    onClick:function(id){
+		    	if(id == 'new_serie') {
+		    	 	var myWins= new dhtmlXWindows();    	 	
+		    	 	myWins.createWindow('new_serie', 240, 75, 360,180);
+		    		myWins.window('new_serie').setText('Novo registro');
+		    		myWins.window('new_serie').setModal(true);
+		    		myWins.window('new_serie').denyResize();
+		    		myWins.window('new_serie').denyPark();
+		    		
+		    		formStructure = [
+					    {type:"settings",position:"label-top"},
+					    {type: "block", name:'nivel', list:[
+						    {type: "fieldset",name:"nivel", width:300, label: "Novo registro", list:[
+						        {type: "hidden", name: 'nivel_id', value: '<%= @nivel.id %>'},
+						        {type: "input", width: 200, name: 'titulo', label: 'Titulo:', validate: "NotEmpty", required: true},
+								{type: "block", name:'nivel', list:[
+									{type: "button", inputLeft: -25, name: "save", value: "Adicionar"},
+									{type: "button", position:'absolute',inputLeft:85,inputTop:6, name: "cancel", value: "Cancelar"},
+								]},
+						    ]}
+						 ]},
+					];
+					
+		    		new_register = myWins.window('new_serie').attachForm(formStructure);
+		    		new_register.attachEvent("onButtonClick", function(name, command) {
+						if(name == 'save') {
+							//alert(new_register.validate());
+							this.send('<%= series_new_path(:method => :post) %>', function(loader, response){
+					            myWins.window('new_serie').close();
+					            mygrid.updateFromXML('series.xml');
+					            parent.atualiza_menu();
+					        });					        
+						}else if(name == 'cancel') {
+							myWins.window('new_serie').close();
+						}
+					});
+		    	 }else if (id == 'delete_serie') {
+					var selectedRow = mygrid.getSelectedId();
+			    	if(selectedRow > 0) {
+						dhtmlx.confirm({
+						    title: "Tem certeza?",
+						    text: "Você tem certeza que deseja excluir esta série? Todas as turmas e aulas associadas a ela serão excluidas",
+						    callback: function(name) {
+						    	if(name) {
+						    		dhtmlx.confirm({
+									    title: "Tem certeza?",
+									    text: "Lembre que esta ação não podera ser desfeita, esta série e todos as turmas e aulas associadas a ela serão apagados definitivamente.",
+									    callback: function(name) {
+									    	if(name) {
+									    		mygrid.deleteSelectedItem();		    		
+										    	parent.atualiza_menu();
+									    	}
+									    }
+									});
+						    	}
+						    }
+						});
+					}else {
+						dhtmlx.message({
+						    text:"Você não selecionou nenhum registro para excluir!",
+						    expire:2000
+						});
+					}
+					
+				}
+    		}
+		});
+	});
+	function salvar_alteracoes() {
+		myForm.send('<%= update_nivel_path(@nivel) %>', function(loader, response) {
+			dhtmlx.message({
+			    text:"Registro atualizado com sucesso!",
+			    expire:1000
+			});
+		});
+		parent.atualiza_menu();
+	}
+</script>
+<style>
+	html, body, #gridbox {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/ 
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+</style>
+<header><div id="niveis_menuObj"></div></header>
+
+<div id="gridbox"></div>  
+<div id='form_container'></div>
+
+<!--
+<section class="content-header">
+	<h1>Novo nivel</h1>
+	<ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><%= link_to niveis_path do %><i class="fa fa-users"></i> Niveis<% end %></li>
+        <li class="active fa fa-user">Novo</li>
+    </ol>  
+</section>
+<section class="content">
+	<div class="row">
+		<div class="col-md-6">
+			<%= render 'form' %>
+		</div>
+	</div>
+</section>
+-->

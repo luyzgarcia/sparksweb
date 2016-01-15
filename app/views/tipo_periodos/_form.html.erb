@@ -1,0 +1,46 @@
+<%= javascript_include_tag '' %>  
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="box-primary">
+			<%= form_for(@tipo, :html => { :role => "form"}) do |f| %>
+				<div class="col-md-12">
+			  		<div id='error_messages'></div>
+			  	</div>
+			  	<% if @tipo.errors.any? %>
+			    	<div id="error_explanation">
+				  		<div class="alert alert-danger" role="alert">
+				  			<strong>Erro salvar usuário!</strong>
+					  		<br/><br/>
+					    	<ul>
+						    	<% @tipo.errors.full_messages.each do |message| %>
+						        	<li><%= message %></li>
+						      	<% end %>
+					    	</ul>
+				   		</div>
+			    	</div>
+			  <% end %>
+			  
+			  <div class="box-body">
+				  	<div class="form-group">
+		                <%= f.label :titulo, 'Titulo'%>
+		                <%= f.text_field :titulo, :class =>"form-control", :placeholder=> :titulo %>
+		            </div>
+		            <div class="form-group">
+		                <%= f.label :status %>
+		                <%= f.select :status, options_for_select([['Ativo',1], ['Inativo',0]]), {}, {:class =>"form-control", :placeholder=> :descricao} %>
+		            </div>
+			  </div>
+			  
+			  
+			   <div class="box-footer">
+			  	<%= f.submit 'Salvar', :class => "btn btn-primary" %>
+			  	<%= link_to 'Cancelar', '#', :id => 'Cancel', :class => "btn_fechar btn btn-cancel" %>
+	          </div>
+			  
+			  
+			 
+		   </div>
+			<% end %>
+		</div>
+</div>

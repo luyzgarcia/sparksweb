@@ -1,0 +1,27 @@
+/*
+// require_tree .
+// require_self
+// require  color_admin/style.min
+
+<!-- ================== BEGIN BASE CSS STYLE ================== -->
+* require_tree ../../../vendor/assets/stylesheets/color_admin/.
+* require_tree ../../../vendor/assets/plugins/jquery-ui/themes/base/minified/.
+* require ../../../vendor/assets/plugins/bootstrap/css/bootstrap.min.css
+* require ../../../vendor/assets/plugins/font-awesome/css/font-awesome.min.css
+*= require ../../../vendor/assets/plugins/jquery-ui/themes/base/minified/jquery-ui.min.css
+*= require ../../../vendor/assets/plugins/bootstrap/css/bootstrap.min.css
+*= require ../../../vendor/assets/plugins/font-awesome/css/font-awesome.min.css
+*= require ../../../vendor/assets/stylesheets/color_admin/animate.min.css
+*= require ../../../vendor/assets/stylesheets/color_admin/style.min.css
+*= require ../../../vendor/assets/stylesheets/color_admin/style-responsive.min.css
+*= require ../../../vendor/assets/stylesheets/color_admin/theme/default.css
+<!-- ================== END BASE CSS STYLE ================== -->
+
+
+<!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
+*= require ../../../vendor/assets/plugins/jquery-jvectormap/jquery-jvectormap-1.2.2.css
+*= require ../../../vendor/assets/plugins/bootstrap-datepicker/css/datepicker.css
+*= require ../../../vendor/assets/plugins/bootstrap-datepicker/css/datepicker3.css
+*= require ../../../vendor/assets/plugins/gritter/css/jquery.gritter.css
+<!-- ================== END PAGE LEVEL STYLE ================== -->
+*/

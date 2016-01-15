@@ -1,0 +1,223 @@
+<script>
+	dhtmlxEvent(window,"load", function(id){
+		//var layout = new dhtmlXLayoutObject(document.body, "2E");
+		var layout = new dhtmlXLayoutObject('aulas', "1C");
+		layout.cells("a").hideHeader();
+
+
+		mygrid = layout.cells("a").attachGrid();
+		mygrid.loadXML("aulas.xml", function() {
+			mygrid.groupBy(3);
+		});
+		mygrid.setImagePath("/assets/dhtmlx/");
+		//mygrid.setColumnIds("motivo,dia");
+		mygrid.enableAutoWidth(true);
+		mygrid.enableEditEvents(false,false,false);
+		mygrid.init();
+
+		dp = new dataProcessor('<%= turmas_db_action_aulas_path %>');
+		dp.init(mygrid);
+		dp.setTransactionMode("POST");
+
+		toolbar = new dhtmlXToolbarObject({
+    		parent:"my_toolbar_here",
+    		icons_path: "/assets/dhtmlx/",
+		    items:[
+		        {id: "new", type: "button", text: "Novo", img: "new.gif"},
+		        {id: "delete", type: "button", text:'Remover', img: "trash_delete.gif"},
+						{id: "edit", type: "button", text:'Editar', img: "edit.png"},
+		    ],
+		    onClick:function(id){
+		    	if(id == 'new') {
+		    		var myWins= new dhtmlXWindows();
+		    		myWins.createWindow('new_aula', 50, 25, 360,400);
+		    		myWins.window('new_aula').setText('Novo registro');
+		    		myWins.window('new_aula').setModal(true);
+		    		myWins.window('new_aula').denyResize();
+		    		myWins.window('new_aula').denyPark();
+
+		    		formStructure = [
+					    {type:"settings",position:"label-top"},
+					    {type: "block", name:'nivel', list:[
+						    {type: "fieldset",name:"nivel", width:300, label: "Novo registro", list:[
+
+										{type: "hidden", name: 'turma_id', value: '<%= @turma.id %>'},
+						        {type: "input", width: 200, name: 'titulo', label: 'Titulo:', validate: "NotEmpty", required: true},
+										{type: "combo", width: 200, name: 'dia_semana', readonly: true, label: 'Dia da semana', required: true, options:[]},
+						       	{type: "label",className: 'label_form',label: "Entrada"},
+						       		{type: "block", name:'nivel', blockOffset: 0, list:[
+							        {type:"combo", className:'time', width: 60, name:"hora_entrada",label:"Hora",
+												readonly:true, validate: "NotEmpty", required: true, options :[]},
+							        {type: "newcolumn", offset:30},
+							        {type:"combo",inputTop:15, className:'time', width: 60, name:"minuto_entrada",readonly:true, label:"Minutos",
+							        	validate: "NotEmpty", required: true, readonly:true, options:[]},
+						        ]},
+						        {type: "block", name:'nivel', blockOffset: 0, list:[
+						       		{type: "label",className: 'label_form',label: "Saida"},
+						       	]},
+						       {type: "block", name:'nivel', blockOffset: 0, list:[
+							        {type:"combo", className:'time', width: 60, name:"hora_saida",label:"Hora",
+												validate: "NotEmpty", required: true, readonly:true,options :[]},
+							        {type: "newcolumn", offset:30},
+							        {type:"combo", className:'time', width: 60, name:"minuto_saida",label:"Minutos",
+							        	validate: "NotEmpty", required: true,readonly:true, options:[]},
+						        ]},
+								{type: "block", name:'nivel', list:[
+									{type: "button", inputLeft: 10, name: "save", value: "Adicionar"},
+									{type: "button", position:'absolute',inputLeft:105,inputTop:6, name: "cancel", value: "Cancelar"},
+								]},
+						    ]}
+						 ]},
+					];
+
+
+		    		new_register = myWins.window('new_aula').attachForm(formStructure);
+					new_register.reloadOptions("dia_semana", 'dia_semana_aulas');
+					new_register.reloadOptions("hora_entrada", '/horas');
+					new_register.reloadOptions("minuto_entrada", '/minutos');
+					new_register.reloadOptions("hora_saida", '/horas');
+					new_register.reloadOptions("minuto_saida", '/minutos');
+
+					new_register.attachEvent("onButtonClick", function(name, command) {
+							if(name == 'save') {
+								this.send('<%= new_aula_turma_path(@turma)  %>', function(loader, response){
+									if(loader.xmlDoc.status == 400) {
+										var erro = $.parseJSON(response)
+										dhtmlx.alert({
+											title:"Não foi possivel cadastrar aula.",
+											type:"alert-error",
+											text: erro.message
+										});
+									}else {
+							      myWins.window('new_aula').close();
+							      mygrid.updateFromXML('aulas.xml', true, true, function() {
+											mygrid.groupBy(3);
+										});
+									}
+						    });
+							}else if(name == 'cancel') {
+								myWins.window('new_aula').close();
+							}
+						});
+
+		    	}else if(id == 'delete') {
+		    			var selectedRow = mygrid.getSelectedId();
+			    		if(selectedRow > 0) {
+							dhtmlx.confirm({
+							    title: "Tem certeza?",
+							    text: "Você tem certeza que deseja excluir este registo??",
+							    callback: function(name) {
+							    	if(name) {
+							    		mygrid.deleteSelectedItem();
+											mygrid.groupBy(3);
+							    	}
+							    }
+							});
+						}else {
+							dhtmlx.message({
+							    text:"Você não selecionou nenhum registro para excluir!",
+							    expire:1000
+							});
+						}
+		    	}else if(id == 'edit') {
+						var selectedRow = mygrid.getSelectedId();
+						if(selectedRow > 0) {
+							console.log(selectedRow);
+
+							var myWins= new dhtmlXWindows();
+
+			    		myWins.createWindow('new_aula', 50, 25, 360,400);
+			    		myWins.window('new_aula').setText('Novo registro');
+			    		myWins.window('new_aula').setModal(true);
+			    		myWins.window('new_aula').denyResize();
+			    		myWins.window('new_aula').denyPark();
+
+			    		formStructure = [
+						    {type:"settings",position:"label-top"},
+						    {type: "block", name:'nivel', list:[
+							    {type: "fieldset",name:"nivel", width:300, label: "Novo registro", list:[
+
+											{type: "hidden", name: 'turma_id', value: '<%= @turma.id %>'},
+							        {type: "input", width: 200, name: 'titulo', label: 'Titulo:', validate: "NotEmpty", required: true},
+											{type: "combo", width: 200, name: 'dia_semana', readonly: true, label: 'Dia da semana', required: true, options:[]},
+							       	{type: "label",className: 'label_form',label: "Entrada"},
+							       		{type: "block", name:'nivel', blockOffset: 0, list:[
+								        {type:"combo", className:'time', width: 60, name:"hora_entrada",label:"Hora",
+													readonly:true, validate: "NotEmpty", required: true, options :[]},
+								        {type: "newcolumn", offset:30},
+								        {type:"combo",inputTop:15, className:'time', width: 60, name:"minuto_entrada",readonly:true, label:"Minutos",
+								        	validate: "NotEmpty", required: true, readonly:true, options:[]},
+							        ]},
+							        {type: "block", name:'nivel', blockOffset: 0, list:[
+							       		{type: "label",className: 'label_form',label: "Saida"},
+							       	]},
+							       {type: "block", name:'nivel', blockOffset: 0, list:[
+								        {type:"combo", className:'time', width: 60, name:"hora_saida",label:"Hora",
+													validate: "NotEmpty", required: true, readonly:true,options :[]},
+								        {type: "newcolumn", offset:30},
+								        {type:"combo", className:'time', width: 60, name:"minuto_saida",label:"Minutos",
+								        	validate: "NotEmpty", required: true,readonly:true, options:[]},
+							        ]},
+									{type: "block", name:'nivel', list:[
+										{type: "button", inputLeft: 10, name: "save", value: "Salvar"},
+										{type: "button", position:'absolute',inputLeft:105,inputTop:6, name: "cancel", value: "Cancelar"},
+									]},
+							    ]}
+							 ]},
+						];
+
+
+			    	new_register = myWins.window('new_aula').attachForm(formStructure);
+					new_register.reloadOptions("dia_semana", 'dia_semana_aulas');
+					new_register.reloadOptions("hora_entrada", '/horas');
+					new_register.reloadOptions("minuto_entrada", '/minutos');
+					new_register.reloadOptions("hora_saida", '/horas');
+					new_register.reloadOptions("minuto_saida", '/minutos');
+
+					new_register.load('/turmas/aula/'+selectedRow);
+					new_register.attachEvent("onButtonClick", function(name, command) {
+							if(name == 'save') {
+								this.send('<%= update_aula_path  %>', function(loader, response){
+									if(loader.xmlDoc.status == 400) {
+										var erro = $.parseJSON(response)
+										dhtmlx.alert({
+											title:"Não foi possivel atualizar aula.",
+											type:"alert-error",
+											text: erro.message
+										});
+									}else {
+							      myWins.window('new_aula').close();
+							      mygrid.updateFromXML('aulas.xml', true, true, function() {
+											mygrid.groupBy(3);
+										});
+									}
+						    });
+							}else if(name == 'cancel') {
+								myWins.window('new_aula').close();
+							}
+						});
+
+
+
+					}else {
+						dhtmlx.message({
+						    text:"Você não selecionou nenhum registro para editar!",
+						    expire:1500
+						});
+					}
+				}
+		    }
+		});
+
+	});
+</script>
+<style>
+	html, body, #aulas {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+</style>
+<div id='my_toolbar_here' style="width: 100%;"></div>
+<div id="aulas"></div>

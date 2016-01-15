@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  motivo: MyString
+  dia: 2015-03-20 09:03:36
+  nivel_id: 
+
+two:
+  motivo: MyString
+  dia: 2015-03-20 09:03:36
+  nivel_id: 

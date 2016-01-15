@@ -1,0 +1,102 @@
+<%= javascript_include_tag 'niveis' %>  
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="box-primary">
+			<%= form_for(@nivel, :html => { :role => "form"}) do |f| %>
+				<div class="col-md-12">
+			  		<div id='error_messages'></div>
+			  	</div>
+			  	<% if @nivel.errors.any? %>
+			    	<div id="error_explanation">
+				  		<div class="alert alert-danger" role="alert">
+				  			<strong>Erro salvar usuário!</strong>
+					  		<br/><br/>
+					    	<ul>
+						    	<% @nivel.errors.full_messages.each do |message| %>
+						        	<li><%= message %></li>
+						      	<% end %>
+					    	</ul>
+				   		</div>
+			    	</div>
+			  <% end %>
+			  
+			  <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#fa-user" data-toggle="tab">Dados do Nivel</a></li>
+                        <li><a href="#ferias" data-toggle="tab">Férias e Dias não letivos</a></li>
+                        <li><a href="#horarios" data-toggle="tab">Horários</a></li>
+                        <li><a href="#fa-icons" data-toggle="tab">Conclusão</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="fa-user" >
+                       	 	<div class="box-body">
+							  	<div class="form-group">
+					                <%= f.label :titulo, 'Titulo'%>
+					                <%= f.text_field :titulo, :class =>"form-control", :placeholder=> :titulo %>
+					            </div>
+					            <div class="form-group">
+					                <%= f.label :descricao %>
+					                <%= f.text_field :descricao, :class =>"form-control", :placeholder=> :descricao %>
+					            </div>
+					            <div class="form-group">
+					                <%= f.label :dias_semana_letivo, 'Dias letivos' %>
+					                <div id='jqxListBox'></div>
+					                <%= f.hidden_field :dias_semana_letivo %>
+					                
+					                <!--<%= f.select(:dias_semana_letivo , options_for_select([['Domingo',0],['Seguna', 1], ['Terça', 2], ['Quarta', 3], ['Quinta', 4], ['Sexta', 5], ['Sabado', 6]], selected:@nivel.dias_semana_letivo), 
+					                	{},{:class =>"form-control", :style => 'display:none', :placeholder=> :dias_semana_letivo, :multiple => true}	) %>
+					                -->
+					            </div>
+						  </div>
+                        </div>
+                        <div class="tab-pane" id="ferias" >
+                        	<div class="row">
+	                        	<div class="box-body">
+	                        		<div class="col-lg-12">
+		                        		<div class="form-group">
+		                        			<label>Dias não letivos</label>
+		                        		</div>
+	                        		</div>
+	                    			<%= f.fields_for :dias_nao_letivos do |u| %>
+	            					<%= 
+	            					#	u.hidden_field :id, :value => @nivel.dias_nao_letivo.id 
+	            					%>
+	            					<div class="col-lg-6">
+							            <div class="form-group">
+							                <%= u.label :motivo %>
+							                <%= u.text_field :motivo, :class =>"form-control", :placeholder=> :nome %>
+							            </div>
+						            </div>
+						            
+						            <div class="col-lg-6">
+							            <div class="form-group">
+							                <%= u.label :dia %>
+							                <%= u.date_field :dia, :class =>"form-control", :placeholder=> :nome %>
+							            </div>
+						            </div>
+						            
+						            <% end %>
+	                        	</div>
+                        	</div>
+                        </div>
+                        
+                        <div class="tab-pane" id="horarios" >
+                       	 	<div class="box-body">
+                       	 		Tabela periodos
+						  </div>
+                        </div>
+                        
+                        <div class="tab-pane" id="fa-icons" >
+                       	 	 <div class="box-footer">
+							  	<%= f.submit 'Salvar', :class => "btn btn-primary" %>
+							  	<%= link_to 'Cancelar', '#', :id => 'Cancel', :class => "btn_fechar btn btn-cancel" %>
+					          </div>
+                        </div>
+                    </div>
+                    
+               </div>
+		   </div>
+			<% end %>
+		</div>
+</div>

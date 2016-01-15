@@ -1,0 +1,368 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"et",
+				"etiqueta_id"
+			],
+			[
+				"registro",
+				"registros_historico"
+			],
+			[
+				"erro",
+				"errors"
+			],
+			[
+				"etiquetas",
+				"etiquetas_aluno"
+			],
+			[
+				"comm-",
+				"comm-block	Comment - Block style comment"
+			],
+			[
+				"horario",
+				"horario_termino"
+			],
+			[
+				"hoar",
+				"horario_termino"
+			],
+			[
+				"hora",
+				"horario_inicio"
+			],
+			[
+				"Tipo",
+				"TipoPeriodo"
+			],
+			[
+				"log",
+				"console.log('$0');"
+			],
+			[
+				"turma",
+				"turma_id"
+			],
+			[
+				"cons",
+				"console.log('$0');"
+			],
+			[
+				"getS",
+				"getSelectedId"
+			],
+			[
+				"fu",
+				"function"
+			],
+			[
+				"M",
+				"myMenu"
+			],
+			[
+				"hou",
+				"hours"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 375.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"i",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 579.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/assets",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/assets/stylesheets",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/controllers",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/alunos",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/dashboard",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/layouts",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/registros",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/turmas",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/config",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/db",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/public"
+	],
+	"file_history":
+	[
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/db/migrate/20150617132143_change_name_table_registros.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/alunos/historico.xml.builder",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/registros/index.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/controllers/registros_controller.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/models/aluno.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/controllers/alunos_controller.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/dashboard/index.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/turmas/alunos.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/wercker.yml",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/public/H503A0015DD63A517488C4D28.txt",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/assets/stylesheets/layout_dhtmlx.css.scss",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/assets/stylesheets/dashboard.css.scss",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/models/registro.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/db/migrate/20150618131303_add_aluno_to_registros.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/layouts/dhtmlx.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/config/initializers/assets.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/assets/stylesheets/application.css.scss",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/config/database.yml",
+		"/Users/Luizgarcia/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/vendor/assets/stylesheets/dhtmlx.css.scss",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/vendor/assets/stylesheets/dhtmlx/skins/terrace/dhtmlx.css",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/niveis/edit.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/niveis/niveis_toolbar.xml.builder",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/cms.sublime-project",
+		"/Users/Luizgarcia/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/turmas/show.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/models/etiqueta.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/alunos/index.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/controllers/etiquetas_controller.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/menu/menu_xml.xml.builder",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/etiquetas/etiquetas_por_aluno.xml.builder",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/config/routes.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/etiquetas/etiquetas_por_aluno.json.jbuilder",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/Gemfile",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/etiquetas/etiquetas_por_aluno.json.json_builder",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/config/initializers/inflections.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/niveis/index.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/niveis/ferias.xml.builder",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/db/migrate/20150528142808_create_registros.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/models/antena.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/turmas/aulas.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/controllers/periodos_controller.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/controllers/turmas_controller.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/turmas/alunos.xml.builder",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/views/alunos/index.xml.builder",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/controllers/users_controller.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks_bit/app/assets/javascripts/application.js",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/controllers/alunos_controller.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/views/menu/context_menu.xml",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/controllers/turmas_controller.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/views/dashboard/index.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/views/turmas/alunos.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/views/dashboard/calendario.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/controllers/dashboard_controller.rb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/views/layouts/application.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/views/users/db_action.xml.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/app/views/layouts/dhtmlx.html.erb",
+		"/Users/Luizgarcia/Documents/Projetos/RoR/sparks/config/initializers/devise.rb",
+		"/Users/Luizgarcia/Library/Application Support/Sublime Text 3/Packages/Alignment/Base File.sublime-settings",
+		"/Users/Luizgarcia/Library/Application Support/Sublime Text 3/Packages/User/HTML (Rails).sublime-settings"
+	],
+	"find":
+	{
+		"height": 37.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"enableEditEvents",
+			"Adicionar",
+			"new.gif",
+			"remember",
+			"remember_open",
+			"remember_open_files",
+			"error",
+			"erro",
+			"enable",
+			"xml",
+			"json",
+			"db_ac",
+			"db_Ac",
+			"contextArea",
+			"visualizar_aluno",
+			"visu",
+			"%>');",
+			":id",
+			"|| ",
+			"\n  			",
+			"');\n",
+			"console",
+			"progr",
+			"erro",
+			"dhxForm",
+			"realForm",
+			"real",
+			"myMenu",
+			"\n					",
+			"name",
+			"myM",
+			"my",
+			"Ativo",
+			"conta",
+			"perfil",
+			"quit"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		},
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.63938081997,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.sftp":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "sparks.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 392.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

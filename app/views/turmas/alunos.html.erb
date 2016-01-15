@@ -1,0 +1,429 @@
+<%= csrf_meta_tags %>
+<script>
+	var perfil = '<%= current_user.role %>';
+	dhtmlxEvent(window,"load", function(id){
+		var layout = new dhtmlXLayoutObject(document.body, "1C");
+		layout.cells('a').hideHeader();
+
+		var importOpt = Array(
+							Array('new_aluno', 'obj', 'Novo aluno', 'new.png'),
+							Array('import_excel','obj', 'Importar de planilha'   , 'stylesheet.gif'),
+							Array('import_bloconotas',   'obj', 'Importa de bloco de notas' , 'database.gif')
+						);
+		//if(perfil != 'admin') {
+			toolbar = layout.cells('a').attachToolbar({
+	    		icons_path: "/assets/dhtmlx/",
+	    		items:[
+			    	{id: "new_aluno", type: "button", text: "Novo aluno", img: "new.png"},
+			    	{id: "sep3", type: "separator"},
+					{id: "remove_aluno", type: "button", text: "Remover aluno da turma", img: "delete.png"},
+			    	{id: "sep1", type: "separator"},
+			      	{id: "import_excel", type: "button", text: "Importar de planilha", img: "stylesheet.gif"},
+			      	{id: "sep2", type: "separator"},
+					{id: "add_aluno", type: "button", text: "Adicionar aluno", img: "user_add.png"},
+					
+
+			    ],
+			    onClick:function(id){
+			    	onClickGrid(id);
+			    }
+			});
+		//}
+		//Context Menu
+		var contextMenu = new dhtmlXMenuObject();
+		contextMenu.setIconsPath("/assets/dhtmlx/");
+		contextMenu.renderAsContextMenu();
+		contextMenu.attachEvent("onClick",function(id) {
+			onClickGrid(id);
+		});
+		
+		contextMenu.loadFromHTML("contextArea", true);
+		//Adiciona a lista de alunos
+		mygrid = layout.cells('a').attachGrid();
+		mygrid.load("alunos.xml",'xml');
+		mygrid.setHeader("Código,Nome do aluno,RG,CPF,Nome da mae,Nome do pai");
+		mygrid.setColumnIds("codigo,nome,rg,cpf,nome_mae,nome_pai");
+		mygrid.setColSorting("str,str,int,int,str,str,str");
+		mygrid.setColTypes("edn,ed,ed,ed,ed,ed,ro");
+		mygrid.attachHeader("#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter");
+		mygrid.enableStableSorting(true);
+		mygrid.enableAutoWidth(true);
+		mygrid.enableEditEvents(false,true,true);
+		//mygrid.enableLightMouseNavigation(true);
+		
+		mygrid.init();
+		dp = new dataProcessor('<%= turmas_db_action_alunos_path %>');
+		dp.enableDataNames(true);
+		//Seta o context Menu
+		mygrid.enableContextMenu(contextMenu);
+		dp.init(mygrid);
+		dp.setTransactionMode("POST");
+
+		dp.defineAction("error", retorno_erro);
+		dp.attachEvent("onBeforeDataSending", function(id, state, data){
+			layout.cells('a').progressOn();
+			return true;
+		});
+		dp.attachEvent("onAfterUpdateFinish", function(){
+		   layout.cells('a').progressOff();
+		   return true;
+		});
+	});
+	function retorno_erro(retorno) {
+		dhtmlx.alert({
+			title:"Erro ao atualizar aluno!",
+			type:"alert-error",
+			text:"O seguinte erro aconteceu: "+retorno.firstChild.data
+		});
+	}
+	function onClickGrid(id) {
+		if(id== 'new_aluno') {
+    		var myWins= new dhtmlXWindows();
+    	 	myWins.createWindow('new_aluno', 240, 75, 575,450);
+    		myWins.window('new_aluno').setText('Novo Aluno');
+    		myWins.window('new_aluno').setModal(true);
+    		myWins.window('new_aluno').denyResize();
+    		myWins.window('new_aluno').denyPark();
+
+    		formStructure = [
+			    {type:"settings",position:"label-top"},
+			    {type: "block", name:'nivel', list:[
+				    {type: "fieldset",name:"nivel",width:520, label: "Novo registro", list:[
+				        {type: "hidden", name: 'turma_id', value: '<%= @turma.id %>'},
+				        {type: "input", width: 200, name: 'codigo', label: 'Codigo', validate: "NotEmpty", required: true},
+				        {type: "input", width: 200, name: 'nome', label: 'Nome', validate: "NotEmpty", required: true},
+				        {type: "input", width: 200, name: 'rg', label: 'RG'},
+				        {type: "input", width: 200, name: 'cpf', label: 'CPF'},
+				        {type: "input", width: 200, name: 'nome_mae', label: 'Nome da mãe'},
+				        {type: "input", width: 200, name: 'telefone_mae', label: 'Telefone da mãe'},
+				        {type:"newcolumn", offset:20},
+				        {type: "input", width: 200, name: 'celular_mae', label: 'Celular da mãe'},
+				        {type: "input", width: 200, name: 'email_mae', label: 'Email da mãe'},
+				        {type: "input", width: 200, name: 'nome_pai', label: 'Nome do pai'},
+				        {type: "input", width: 200, name: 'telefone_pai', label: 'Telefone do pai'},
+				        {type: "input", width: 200, name: 'celular_pai', label: 'Celular do pai'},
+				        {type: "input", width: 200, name: 'email_pai', label: 'Email do pai'},
+						{type: "block", name:'nivel', list:[
+							{type: "button", name: "save", value: "Salvar mudanças",inputTop:10},
+							{type: "button", position:'absolute',inputLeft:155,inputTop:16, name: "cancel", value: "Cancelar"},
+						]},
+				    ]}
+				 ]},
+			];
+			new_aluno = myWins.window('new_aluno').attachForm(formStructure);
+
+			new_aluno.attachEvent("onButtonClick", function(name, command) {
+				if(name == 'save') {
+					//Não vai usar;
+					new_aluno.send('<%= alunos_new_path(:method => :post) %>', function(loader, response){
+						myWins.window('new_aluno').close();
+			           	mygrid.updateFromXML('alunos.xml');
+			        });
+				}else if(name == 'cancel') {
+					myWins.window('new_aluno').close();
+				}
+			});
+    	}else 
+    	if(id == 'import_excel'){
+    		var myWins= new dhtmlXWindows();
+    	 	myWins.createWindow('import_excel', 240, 75, 360,180);
+    		myWins.window('import_excel').setText('Importar alunos de arquivo Xls');
+    		myWins.window('import_excel').setModal(true);
+    		myWins.window('import_excel').denyResize();
+    		myWins.window('import_excel').denyPark();
+
+    		formStructure = [
+			    {type:"settings",position:"label-top"},
+			    {type: "block", name:'nivel', list:[
+				    {type: "fieldset",name:"nivel",width:300, label: "Novo registro", list:[
+				        {type: "hidden", name: 'turma_id', value: '<%= @turma.id %>'},
+				        {type: "upload", name: 'arquivo_upload', multiple: 'false', width:300,
+				        	titleText: 'Clique no botão ao lado para adicionar o arquivo',
+				        	url: '<%= alunos_import_turma_path(@turma) %>',
+				        },
+						{type: "block", name:'nivel', list:[
+							{type: "button", position:'absolute',inputLeft:192,inputTop:15, name: "cancel", value: "Cancelar"},
+						]},
+				    ]}
+				 ]},
+			];
+
+			import_aluno = myWins.window('import_excel').attachForm(formStructure);
+			import_aluno.attachEvent("onUploadComplete",function(realName){
+				myWins.window('import_excel').close();
+			    mygrid.updateFromXML('alunos.xml');
+			});
+
+    		import_aluno.attachEvent("onButtonClick", function(name, command) {
+				if(name == 'import') {
+					//Não vai usar;
+					import_aluno.send('<%= alunos_import_path %>', function(loader, response){
+			        });
+				}else if(name == 'cancel') {
+					myWins.window('import_excel').close();
+				}
+			});
+    	}else
+		//*Remover aluno da turma*//
+		if(id == 'remove_aluno') {
+			var selectedRow = mygrid.getSelectedId();
+			if(selectedRow > 0) {
+				dhtmlx.confirm({
+				    title: "Tem certeza?",
+				    text: "Tem certeza que deseja remover este aluno da turma?",
+				    callback: function(name) {
+				    	if(name) {
+								mygrid.deleteSelectedItem();
+				    	}
+				    }
+				});
+			}else {
+				dhtmlx.message({
+				    text:"Você não selecionou nenhum registro para excluir!",
+				    expire:2000
+				});
+			}
+		}else if(id == 'add_aluno') {
+			var addWin = new dhtmlXWindows();
+    	 	w1 = addWin.createWindow('add_aluno', 240, 55, 830,550);
+    		addWin.window('add_aluno').setText('Adicionar aluno a turma');
+    		addWin.window('add_aluno').setModal(true);
+    		addWin.window('add_aluno').denyResize();
+    		addWin.window('add_aluno').denyPark();
+
+    		addtoolbar = w1.attachToolbar({
+	    		icons_path: "/assets/dhtmlx/",
+	    		items:[
+			    	{id: "add_aluno_selected", type: "button", text: "Adicionar aluno", img: "new.png"}
+			    ],
+			    onClick:function(id){
+			    	if(gridAlunos.getSelectedRowId() != null) {
+			    		//Adiciona os alunos a turma
+			    		$.each(gridAlunos.getSelectedRowId().split(','), function( index, value ) {
+							window.dhx4.ajax.post('<%= adiciona_aluno_turma_path() %>', "id="+value+"&turma_id=<%= @turma.id %>", function(response) {
+								//console.log(response);
+								if(response.xmlDoc.status == 400) {
+									var error = $.parseJSON(response.xmlDoc.response)
+
+									dhtmlx.alert({
+										title:"Não foi possivel atualizar o registro.",
+										type:"alert-error",
+										text: error.message
+									});
+								}else {
+									var messagem = $.parseJSON(response.xmlDoc.response);
+									console.log(messagem);
+									dhtmlx.message({
+										text:messagem.message,
+										expire:2000
+									});
+								}
+							});
+						});
+			    	}else {
+			    		dhtmlx.message({
+						    text:"Você não selecionou nenhum registro para adicionar!",
+						    expire:2000
+						});
+			    	}
+			    	//alert(id);
+			    	addWin.window('add_aluno').close();
+			    	mygrid.updateFromXML('alunos.xml');
+			    }
+			});
+
+			gridAlunos = w1.attachGrid();
+			gridAlunos.loadXML('<%= alunos_semturma_path(:format =>:xml) %>');
+			gridAlunos.setHeader("Código,Nome do aluno,RG,CPF,Nome da mae,Nome do pai");
+			gridAlunos.setColumnIds("codigo,nome,rg,cpf,nome_mae,nome_pai");
+			gridAlunos.enableMultiselect(true);
+			//gridAlunos.enableAutoWidth(true);
+			gridAlunos.init();
+			
+
+
+
+		}else if(id == 'visualizar_aluno'){
+			//Pega o id do registro
+			idRecord = mygrid.contextID.split('_')[0];
+			//Pega o nome do aluno do grig
+			nomeAluno = mygrid.cells(idRecord,1).getValue();
+			//Janela Detalhes do nodeValue
+			var detailWin = new dhtmlXWindows();
+    	 	w1 = detailWin.createWindow('detail_aluno', 100, 0, 830,450);
+    		w1.setIconCss('icon-student');
+    		w1.setText('Detalhes do aluno(a): ' + nomeAluno);
+    		w1.setModal(true);
+    		//detailWin.window('detail_aluno').denyResize();
+    		detailWin.window('detail_aluno').denyPark();
+
+
+    		//Cria as tab
+    		var detailTabs = w1.attachTabbar({
+    			icons_path: "/assets/dhtmlx",
+				tabs: [	
+					{id: "historico", label: "Histórico", active: true},
+					{id: "etiquetas", label: "Etiquetas"},
+					{id: "presencas", label: "Histórico de presenças"}
+				]	    			
+    		});
+    		/**
+    		*
+    		* Tab com histórico de entrada e saida
+    		*
+    		**/
+    		//console.log('/alunos/'+idRecord+'/historico.xml');
+
+    		gridHistorico = detailTabs.tabs('historico').attachGrid();
+    		gridHistorico.setHeader("Tipo, Dia, Hora, Código da Etiqueta ");
+			gridHistorico.setColumnIds("tipo,dia, hora,etiqueta_id");
+			gridHistorico.setInitWidths("150,250, *");
+			gridHistorico.loadXML('/alunos/'+idRecord+'/historico.xml', function() {
+				gridHistorico.groupBy(1);
+				gridHistorico.collapseAllGroups();
+			});
+			gridHistorico.customGroupFormat=function(text,count){
+				return "Dia: "+text
+			};
+			gridHistorico.setImagePath("/assets/dhtmlx/");
+			gridHistorico.enableEditEvents(false,false,false);
+			gridHistorico.init();
+
+
+    		/**
+    		*
+    		* Tab com a parte de cadastro de etiquetas do aluno
+    		*
+    		**/
+    		layoutEtiqueta = detailTabs.tabs("etiquetas").attachLayout("2E");
+    		layoutEtiqueta.cells('a').hideHeader();
+    		layoutEtiqueta.cells('a').setHeight(150);
+    		layoutEtiqueta.cells('b').setText('Lista de Etiquetas');
+
+			formData = [
+				{type: "settings", position: "label-right"},
+					{type: "block", width: 800, list:[
+					{type: "fieldset",name:"nivel",inputWidth: 770, label: "Nova etiqueta", list:[
+						{type: "settings", labelWidth: 190, inputWidth: 200, position: "label-left"},
+						{type: "hidden", name: 'aluno_id', value: idRecord},
+					    {type: "input", label: 'Código da etiqueta', name: 'codigo', validate: "NotEmpty", required: true},
+					    {type: "button", name: "save", value: "Adicionar",},
+					]}	
+					]}		
+			];
+
+			etiqueta_form = layoutEtiqueta.cells('a').attachForm(formData);
+
+			etiqueta_form.attachEvent("onButtonClick", function(name, command) {
+				if(name == 'save') {
+					etiqueta_form.send('<%= etiquetas_path(:method => :post) %>', function(loader, response){
+
+						if(loader.xmlDoc.status == 402) {
+							var error = $.parseJSON(loader.xmlDoc.response)
+
+							dhtmlx.alert({
+								title:"Não foi possivel cadastrar.",
+								type:"alert-error",
+								text: error.message
+							});
+						}else {
+							etiqueta_form.clear();
+			           		gridEtiquetas.updateFromXML('/etiquetas_por_aluno/'+idRecord+'.xml');
+							var messagem = $.parseJSON(loader.xmlDoc.response);
+							dhtmlx.message({
+								text:messagem.message,
+								expire:2000
+							});
+						}
+						
+			        });
+
+
+				}
+			});
+
+			gridEtiquetas = layoutEtiqueta.cells('b').attachGrid();
+			
+			gridEtiquetas.setHeader("Código, Cadastrado dia ");
+			gridEtiquetas.setColumnIds("codigo,created_at");
+			gridEtiquetas.setInitWidths("*,250");
+			gridEtiquetas.loadXML('/etiquetas_por_aluno/'+idRecord+'.xml');
+			gridEtiquetas.enableEditEvents(false,false,false);
+
+			gridEtiquetas.init();
+
+			dp = new dataProcessor('<%= etiquetas_db_action_path %>');
+			dp.enableDataNames(true);
+			dp.init(gridEtiquetas);
+			dp.setTransactionMode("POST");
+
+			toolbarEtiquetas = layoutEtiqueta.cells('b').attachToolbar({
+	    		icons_path: "/assets/dhtmlx/",
+	    		items:[
+			    	{id: "remove_etiqueta", type: "button", text: "Remover etiqueta", img: "delete.png"},
+
+			    ],
+			    onClick:function(id){
+			    	if(id == 'remove_etiqueta') {
+				    	var selectedRow = gridEtiquetas.getSelectedId();
+						if(selectedRow > 0) {
+							dhtmlx.confirm({
+							    title: "Tem certeza?",
+							    text: "Tem certeza que deseja remover esta etiqueta desse aluno?",
+							    callback: function(name) {
+							    	if(name) {
+											gridEtiquetas.deleteSelectedItem();
+							    	}
+							    }
+							});
+						}else {
+							dhtmlx.message({
+							    text:"Você não selecionou nenhuma etiqueta para remover!",
+							    expire:2000
+							});
+						}
+				    }
+				}
+			});
+
+    		/**
+    		*
+    		* Tab que apresenta o registro de presença do aluno
+    		*
+    		**/
+    		
+
+		}
+	};
+</script>
+<style>
+	html, body, #gridbox {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+		.dhxform_obj_dhx_skyblue .dhx_file_uploader.dhx_file_uploader_title div.dhx_upload_controls div.dhx_file_uploader_button.button_browse {
+			display: block;
+		}
+		.dhx_file_uploader_button.button_browse {
+			display: none;
+		}
+</style>
+
+<div id="gridbox"></div>
+<div id='form_container'></div>
+<div id="contextArea">
+	<!--<div id="m1" text="File"> // the first top menu item-->
+        <div id="visualizar_aluno" text="Visualizar Histórico"></div>
+        <!-- <div id="ms1" type="separator"></div> // a separator    
+        <div id="desativar" text="Desativar Usuário"></div> //the second child item -->  
+     <!--</div>   -->
+</div>
+<!--
+<form id="realForm" method="POST" enctype="multipart/form-data">
+    <div id="dhxForm">
+
+    </div>
+</form>
+-->

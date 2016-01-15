@@ -1,0 +1,161 @@
+<script>
+
+	dhtmlxEvent(window,"load", function(id){
+		//var layout = new dhtmlXLayoutObject(document.body, "2E");
+		var layout = new dhtmlXLayoutObject('layout_dias_nao_letivos', "1C");
+		layout.cells("a").hideHeader();
+
+
+		mygrid = layout.cells("a").attachGrid();
+		mygrid.load("periodos.xml",'xml');
+		//mygrid.setColumnIds("id,motivo,dia");
+		mygrid.enableAutoWidth(true);
+		mygrid.enableEditEvents(false,false,false);
+		mygrid.init();
+
+		toolbar = new dhtmlXToolbarObject({
+    		parent:"my_toolbar_here",
+    		icons_path: "/assets/dhtmlx/",
+		    items:[
+		        {id: "new", type: "button", text: "Novo", img: "new.gif"},
+		        {id: "delete", type: "button", text:'Excluir', img: "trash_delete.gif"},
+		    ],
+		    onClick:function(id){
+		    	if(id == 'new') {
+		    		var myWins= new dhtmlXWindows();
+		    		//console.log(parent.layout.cells("a"));
+		    		//myWins.attachViewportTo('gridbox');
+		    		myWins.createWindow('new_periodo', 50, 25, 360,350);
+		    		myWins.window('new_periodo').setText('Novo periodo');
+		    		myWins.window('new_periodo').setModal(true);
+		    		myWins.window('new_periodo').denyResize();
+		    		myWins.window('new_periodo').denyPark();
+		    		//console.log(parent);
+		    		//console.log(parent.layout);
+		    		//myWins.window('new_dia_nao_letivo').keepInViewport(false);
+
+
+		    		var formStructure = [
+					    {type:"settings",position:"label-top"},
+					    {type: "block", name:'nivel', list:[
+						    {type: "fieldset",name:"nivel", width:300, label: "Novo registro", list:[
+						        {type: "hidden", name: 'nivel_id', value: '<%= @nivel.id %>'},
+						        {type: "combo", width: 200, name: 'tipo_periodo_id', label: 'Periodo', required: true, options:[]},
+						       	{type: "label",className: 'label_form',label: "Entrada"},
+						       		{type: "block", name:'nivel', blockOffset: 0, list:[
+							        {type:"combo", className:'time', width: 60, name:"hora_entrada",label:"Hora", readonly:true, validate: "NotEmpty", required: true, options :[
+							        	{value: "01", text: "01"},{value: "02", text: "02"},
+							        	{value: "03", text: "03"},{value: "04", text: "04"},
+							        	{value: "05", text: "05"},{value: "06", text: "06"},
+							        	{value: "07", text: "07"},{value: "08", text: "08"},
+							        	{value: "09", text: "09"},{value: "10", text: "10"},
+							        	{value: "11", text: "11"},{value: "12", text: "12"},
+							        	{value: "13", text: "13"},{value: "14", text: "14"},
+							        	{value: "15", text: "15"},{value: "16", text: "16"},
+							        	{value: "17", text: "17"},{value: "18", text: "18"},
+							        	{value: "19", text: "19"},{value: "20", text: "20"},
+							        	{value: "21", text: "21"},{value: "22", text: "22"},
+							        	{value: "23", text: "23"},{value: "00", text: "00"}
+							        ]},
+							        {type: "newcolumn", offset:30},
+							        {type:"combo",inputTop:15, className:'time', width: 60, name:"minuto_entrada",readonly:true, label:"Minutos",
+							        	validate: "NotEmpty", required: true, options:[
+							        	{value: "00", text: "00"},{value: "15", text: "15"},
+							        	{value: "30", text: "30"},{value: "45", text: "45"}
+							        ]},
+						        ]},
+						        {type: "block", name:'nivel', blockOffset: 0, list:[
+						       		{type: "label",className: 'label_form',label: "Saida"},
+						       	]},
+						       {type: "block", name:'nivel', blockOffset: 0, list:[
+
+							        {type:"combo", className:'time', width: 60, name:"hora_saida",label:"Hora", validate: "NotEmpty", required: true, options :[
+							        	{value: "01", text: "01"},{value: "02", text: "02"},
+							        	{value: "03", text: "03"},{value: "04", text: "04"},
+							        	{value: "05", text: "05"},{value: "06", text: "06"},
+							        	{value: "07", text: "07"},{value: "08", text: "08"},
+							        	{value: "09", text: "09"},{value: "10", text: "10"},
+							        	{value: "11", text: "11"},{value: "12", text: "12"},
+							        	{value: "13", text: "13"},{value: "14", text: "14"},
+							        	{value: "15", text: "15"},{value: "16", text: "16"},
+							        	{value: "17", text: "17"},{value: "18", text: "18"},
+							        	{value: "19", text: "19"},{value: "20", text: "20"},
+							        	{value: "21", text: "21"},{value: "22", text: "22"},
+							        	{value: "23", text: "23"},{value: "00", text: "00"}
+							        ]},
+							        {type: "newcolumn", offset:30},
+							        {type:"combo", className:'time', width: 60, name:"minuto_saida",label:"Minutos",
+							        	validate: "NotEmpty", required: true, options:[
+							        	{value: "00", text: "00"},{value: "15", text: "15"},
+							        	{value: "30", text: "30"},{value: "45", text: "45"}
+							        ]},
+						        ]},
+
+								{type: "block", name:'nivel', list:[
+									{type: "button", inputLeft: -03, name: "save", value: "Adicionar"},
+									{type: "button", position:'absolute',inputLeft:103,inputTop:6, name: "cancel", value: "Cancelar"},
+								]},
+						    ]}
+						 ]},
+					];
+
+
+		    		new_register = myWins.window('new_periodo').attachForm(formStructure);
+		    		new_register.reloadOptions("tipo_periodo_id", 'tipo_periodos');
+		    		new_register.attachEvent("onButtonClick", function(name, command) {
+						if(name == 'save') {
+							console.log('Vai salvar novo registro e atualizar tabela');
+							this.send('<%= periodos_new_path %>', function(loader, response){
+					            myWins.window('new_periodo').close();
+					            mygrid.updateFromXML('periodos.xml');
+					        });
+
+						}else if(name == 'cancel') {
+							myWins.window('new_periodo').close();
+						}
+					});
+
+		    	}else if(id == 'delete') {
+		    		var selectedRow = mygrid.getSelectedId();
+		    		if(selectedRow > 0) {
+						dhtmlx.confirm({
+						    title: "Tem certeza?",
+						    text: "Você tem certeza que deseja excluir este registo??",
+						    callback: function(name) {
+						    	if(name) {
+						    		mygrid.deleteSelectedItem();
+						    	}
+						    }
+						});
+					}else {
+						dhtmlx.message({
+						    text:"Você não selecionou nenhum registro para excluir!",
+						    expire:1000
+						});
+					}
+		    	}
+		    }
+		});
+		dp = new dataProcessor('<%= niveis_db_action_periodos_path %>');
+		dp.init(mygrid);
+		dp.setTransactionMode("POST");
+		//dp.setTransactionMode("GET", false);
+		dp.enableDataNames(true);
+
+	});
+
+
+</script>
+<style>
+	html, body, #layout_dias_nao_letivos {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+	 .label_form > div {
+	 	margin: 0 !important;
+	 }
+</style>
+<div id='my_toolbar_here' style="width: 100%;"></div>
+<div id="layout_dias_nao_letivos"></div>

@@ -1,0 +1,104 @@
+<script>
+	dhtmlxEvent(window,"load", function(id){
+		//var layout = new dhtmlXLayoutObject(document.body, "2E");
+		var layout = new dhtmlXLayoutObject('layout_dias_nao_letivos', "1C");
+		layout.cells("a").hideHeader();
+		
+		
+		mygrid = layout.cells("a").attachGrid();
+		mygrid.load("periodo_nao_letivos.xml",'xml');
+		mygrid.setColumnIds("id,descricao,inicio,terminio");
+		mygrid.enableAutoWidth(true);
+		mygrid.enableEditEvents(false,false,false);
+		mygrid.init();
+		
+		toolbar = new dhtmlXToolbarObject({
+    		parent:"my_toolbar_here",
+    		icons_path: "/assets/dhtmlx/",
+		    items:[
+		        {id: "new", type: "button", text: "Novo", img: "new.gif"},
+		        {id: "delete", type: "button", text:'Excluir', img: "trash_delete.gif"},
+		    ],
+		    onClick:function(id){
+		    	if(id == 'new') {
+		    		var myWins= new dhtmlXWindows();
+		    		
+		    		myWins.createWindow('new_periodo_nao_letivo', 50, 25, 360,290);
+		    		myWins.window('new_periodo_nao_letivo').setText('Novo registro');
+		    		myWins.window('new_periodo_nao_letivo').setModal(true);
+		    		myWins.window('new_periodo_nao_letivo').denyResize();
+		    		myWins.window('new_periodo_nao_letivo').denyPark();
+		    		
+		    		formStructure = [
+					    {type:"settings",position:"label-top"},
+					    {type: "block", name:'nivel', list:[
+						    {type: "fieldset",name:"nivel", width:300, label: "Novo registro", list:[
+						        {type: "hidden", name: 'nivel_id', value: '<%= @nivel.id %>'},
+						        {type: "input", width: 200, name: 'descricao', label: 'Descrição:', validate: "NotEmpty", required: true},
+						        {type:"calendar", width: 200, name:"inicio",dateFormat:'%d-%m-%Y', label:"Inicia em:", validate: "NotEmpty", required: true,readonly:true},
+						        {type:"calendar", width: 200, name:"termino",dateFormat:'%d-%m-%Y', label:"Termina em:", validate: "NotEmpty", required: true, readonly:true},
+								{type: "block", name:'nivel', list:[
+									{type: "button", inputLeft: -25, name: "save", value: "Adicionar"},
+									{type: "button", position:'absolute',inputLeft:85,inputTop:6, name: "cancel", value: "Cancelar"},
+								]},
+						    ]}
+						 ]},
+					];
+					
+		    		new_register = myWins.window('new_periodo_nao_letivo').attachForm(formStructure);
+		    		new_register.attachEvent("onButtonClick", function(name, command) {
+						if(name == 'save') {
+							//alert(new_register.validate());
+							console.log('Vai salvar novo registro e atualizar tabela');
+							this.send('<%= new_periodo_nao_letivo_nivel_path(@nivel) %>', function(loader, response){
+					            myWins.window('new_periodo_nao_letivo').close();
+					            mygrid.updateFromXML('periodo_nao_letivos.xml');
+					        });
+							
+					        
+					        
+						}else if(name == 'cancel') {
+							console.log('cancelar cadastro');
+							myWins.window('new_periodo_nao_letivo').close();
+						}
+					});
+		    		
+		    	}else if(id == 'delete') {
+		    		var selectedRow = mygrid.getSelectedId();
+		    		if(selectedRow > 0) {
+						dhtmlx.confirm({
+						    title: "Tem certeza?",
+						    text: "Você tem certeza que deseja excluir este registo??",
+						    callback: function(name) {
+						    	if(name) {					    		
+						    		mygrid.deleteSelectedItem();
+						    	}
+						    }
+						});
+					}else {
+						dhtmlx.message({
+						    text:"Você não selecionou nenhum registro para excluir!",
+						    expire:1000
+						});
+					}
+		    	}
+		    }
+		});
+		dp = new dataProcessor('<%= niveis_db_action_periodo_nao_letivos_path %>');
+		dp.init(mygrid);
+		dp.setTransactionMode("POST");
+		//dp.setTransactionMode("GET", false);
+		dp.enableDataNames(true);
+		
+	});
+</script>
+<style>
+	html, body, #layout_dias_nao_letivos {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/ 
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+</style>
+<div id='my_toolbar_here' style="width: 100%;"></div>
+<div id="layout_dias_nao_letivos"></div>

@@ -1,0 +1,55 @@
+<%= csrf_meta_tags %>
+<script>
+	dhtmlxEvent(window,"load", function(id){
+		//var layout = new dhtmlXLayoutObject(document.body, "2E");
+		var layout = new dhtmlXLayoutObject(document.body, "1C");
+
+		//layout.cells("a").setText("Detalhes da turma");//sets the form's header
+		var tabbar = layout.cells("a").attachTabbar({
+			icons_path: "/assets/dhtmlx/"
+		});
+
+		//Carrega a segunda aba dos alunos
+		var tab = tabbar.addTab(
+	    'alunos',       // id
+	    'Alunos',    // tab text
+	    null,       // auto width
+	    null,       // last position
+	    false,      // inactive
+	    false       // disable close button <-- this one
+		);
+
+		 //Adiciona a lista de alunos
+		 mygrid =  tabbar.cells('alunos').attachURL('<%= alunos_turma_path(@turma) %>');
+		 /*
+		*/
+
+		//Seta a tab como ativa
+		tabbar.tabs('alunos').setActive();
+		//Configura o formulario
+		formStructure = [
+		    {type:"settings",position:"label-top"},
+		    {type: "block", width: 900, name:'nivel', list:[
+			    {type: "fieldset",name:"nivel", width:900, label: "Detalhes", list:[
+			        {type: "hidden", name: 'id'},
+			        {type: "input", width: 300, name: 'titulo', label: 'Titulo:'},
+							{type:"container", name:"aulas", label:"Horário das aulas", inputWidth:500, inputHeight:450},
+					{type: "button", name: "save", value: "Salvar mudanças"},
+			    ]}
+			 ]}
+		];
+
+	});
+</script>
+<style>
+	html, body, #gridbox {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+</style>
+
+<div id="gridbox"></div>
+<div id='form_container'></div>
+<div id="turmas"></div>

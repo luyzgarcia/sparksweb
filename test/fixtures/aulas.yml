@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  titulo: MyText
+  horario_inicio: 2015-04-22 15:05:12
+  horario_termino: 2015-04-22 15:05:12
+  descricao: MyText
+  turma_id: 
+
+two:
+  titulo: MyText
+  horario_inicio: 2015-04-22 15:05:12
+  horario_termino: 2015-04-22 15:05:12
+  descricao: MyText
+  turma_id: 

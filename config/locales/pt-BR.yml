@@ -1,0 +1,88 @@
+pt-BR:
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              blank: "Por favor, insira um email"
+              taken: "Este email já esta em uso"
+              invalid: "Insira um email válido"
+            password:
+              blank: "Você não digitou uma senha"
+              confirmation: "As senhas não conferem"
+              too_short: "A senha é muito curta"
+            password_confirmation:
+              blank: "Você não confirmou sua senha"
+            nome:
+              blank: "Preencha o nome"
+            last_name:
+              blank: "Preencha o ultimo nome"
+        empresa:
+          attributes:
+            nome:
+              blank: "Nome da empresa deve ser preenchido"
+        fornecedor:
+           attributes:
+            nome:
+              blank: "Nome do fornecedor deve ser preenchido"
+  Sunday: 'Domingo'
+  Monday: 'Segunda-feira'
+  Tuesday: 'Terça-feira'
+  Wednesday: 'Quarta-feira'
+  Thursday: 'Quinta-feira'
+  Friday: 'Sexta-feira'
+  Saturday: 'Sabado'
+  date:
+    abbr_day_names:
+    - Dom
+    - Seg
+    - Ter
+    - Qua
+    - Qui
+    - Sex
+    - Sáb
+    abbr_month_names:
+    -
+    - Jan
+    - Fev
+    - Mar
+    - Abr
+    - Mai
+    - Jun
+    - Jul
+    - Ago
+    - Set
+    - Out
+    - Nov
+    - Dez
+    day_names:
+    - Domingo
+    - Segunda
+    - Terça
+    - Quarta
+    - Quinta
+    - Sexta
+    - Sábado
+    formats:
+      default: ! '%d/%m/%Y'
+      long: ! '%d de %B de %Y'
+      short: ! '%d de %B'
+    month_names:
+    -
+    - Janeiro
+    - Fevereiro
+    - Março
+    - Abril
+    - Maio
+    - Junho
+    - Julho
+    - Agosto
+    - Setembro
+    - Outubro
+    - Novembro
+    - Dezembro
+    order:
+    - :day
+    - :month
+    - :year

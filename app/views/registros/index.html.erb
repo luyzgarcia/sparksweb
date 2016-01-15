@@ -1,0 +1,18 @@
+<table border="1px solid" width="100%">
+	<tr>
+		<th>RFID</th>
+		<th>Dia</th>
+		<th>Hora</th>
+		<th>Entrada ou saida?</th>
+	</tr>
+	<tbody>
+		<% @registros.each do |item| %>
+		<tr>
+			<td><%=item[:etiqueta_id] %></td>
+			<td><%=item[:dia]%></td>
+			<td><%=item[:hora].to_formatted_s(:time)%></td>		
+			<td><%=item[:tipo] %></td>
+		</tr>
+		<% end %>
+	</tbody>
+</table>

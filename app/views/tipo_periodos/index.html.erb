@@ -1,0 +1,153 @@
+
+<script>
+	var mygrid;
+	dhtmlxEvent(window,"load", function(id){
+		
+		var layout = new dhtmlXLayoutObject(document.body, "1C");
+		layout.cells('a').setText('Tipo de periodos');
+
+		toolbar = layout.cells('a').attachToolbar({
+		icons_path: "/assets/dhtmlx/",
+		items: [
+		{id: "new_perido", type: "button", text: "Novo periodo", img: "new.gif"},
+		{id: "delete", type: "button", text: "Excluir periodo", img: "remove.gif"}],
+			onClick:function(id){
+				onClickGrid(id);
+			},
+		});
+
+		//Cria o grid
+		mygrid =  layout.cells('a').attachGrid();
+		mygrid.enableAutoWidth(true);
+		mygrid.setHeader("Tipo, Criado em, Atualizado em");
+		mygrid.setColumnIds("titulo,created_at,updated_at");
+		mygrid.setColTypes("ed,ro,ro");
+		mygrid.load("tipo_periodos.xml",'xml');
+		mygrid.enableStableSorting(true);
+		mygrid.init();
+
+		//Conexão com o servidor
+		dp = new dataProcessor('<%= tipo_periodos_db_action_path %>');
+		dp.enableDataNames(true);
+		//dp.enablePartialDataSend(true);
+		
+		dp.init(mygrid);
+		dp.setTransactionMode("POST");
+		dp.defineAction("error", retorno_erro);
+
+		
+	});
+
+	function retorno_erro(retorno) {
+		mygrid.updateFromXML('<%= tipo_periodos_path(:format =>:xml) %>');
+		dhtmlx.alert({
+			title:"Ops, algo deu errado!",
+			type:"alert-error",
+			text:"O seguinte erro aconteceu: "+retorno.firstChild.data
+		});
+		
+	}
+
+	function onClickGrid(id) {
+		if(id == 'new_perido') {
+			var myWins= new dhtmlXWindows();
+			myWins.createWindow('new_perido', 240, 75, 400,180);
+			myWins.window('new_perido').setText('Novo periodo do sistema');
+			myWins.window('new_perido').setModal(true);
+			myWins.window('new_perido').denyResize();
+			myWins.window('new_perido').denyPark();
+
+			formStructure = [
+					{type:"settings",position:"label-top"},
+					{type: "block", name:'nivel', list:[
+					{type: "fieldset",name:"nivel",width:350, label: "Novo registro", list:[
+
+						{type: "input", width: 310, name: 'titulo', label: 'Titulo', validate: "NotEmpty", required: true},
+						{type: "block", name:'nivel', list:[
+							{type: "button", name: "save", value: "Salvar",inputTop:10,inputLeft:-30},
+							{type: "button", position:'absolute',inputLeft:80,inputTop:16, name: "cancel", value: "Cancelar"}
+						]},
+					]}
+				]},
+			];
+			new_perido = myWins.window('new_perido').attachForm(formStructure);
+			new_perido.attachEvent("onButtonClick", function(name, command) {
+				if(name == 'save') {
+					new_perido.send('<%= tipo_periodos_path(:method => :post) %>', function(loader, response){
+						myWins.window('new_perido').close();
+						mygrid.updateFromXML('<%= tipo_periodos_path(:format =>:xml) %>');
+					});
+				}else if(name == 'cancel') {
+					myWins.window('new_perido').close();
+				}
+			});			
+		}else if(id== 'delete') {			
+			if(mygrid.getSelectedId() > 0) {
+				dhtmlx.confirm({
+					title: "Tem certeza?",
+					text: "Tem certeza que deseja remover este usuário?",
+					callback: function(name) {
+						if(name) {
+							mygrid.deleteRow(mygrid.getSelectedId());
+						}
+					}
+				});
+			}else {
+				dhtmlx.message({
+					text:"Você não selecionou nenhum registro para excluir!",
+					expire:2000
+				});
+			}
+		}
+ 	}
+
+
+</script>
+<style>
+	html, body {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/ 
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+</style>
+<header><div id="niveis_menuObj"></div></header>
+<div id="gridbox" style="width:100%;height:100%;"></div>  
+
+<!--
+<section class="content">
+	<h4 class="page-header"> Tipo de peridos 
+    <small>Aqui você pode cadastrar e gerenciar os tipos de periodos cadastradosz </small></h4>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="box">
+				<div class="box-header">
+					<h3 class="box-title">Tipo de peridos cadastrados</h3>
+				</div><
+				<div class="box-body">
+					<table class="table table-bordered">
+						<tr>
+							<th style="width: 10px">#</th>
+							<th>Titulo</th>
+							<th>Status</th>
+							<th style="width: 80px">Ação</th>
+						</tr>
+					
+						<% @tipos.each do |item| %>
+							<tr>
+								<td><%= item.id %></td>
+								<td><%= item.titulo %></td>
+								<td><%= item.status = '1' ? 'Ativo' : 'Inativo' %></td>
+								<td><%= link_to 'Editar', edit_tipo_periodo_path(item) %></td>
+							</tr>
+						
+						<% end %>
+						
+						
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+-->

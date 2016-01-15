@@ -1,0 +1,111 @@
+<script>
+	dhtmlxEvent(window,"load", function(){
+		//var layout = new dhtmlXLayoutObject(document.body, "2E");
+		var layout = new dhtmlXLayoutObject(document.body, "1C");
+		
+		mygrid =  layout.cells("a").attachGrid();
+		mygrid.load("niveis.xml",'xml');
+		mygrid.enableAutoWidth(true);
+		mygrid.enableEditEvents(false,false,false);
+		mygrid.init();
+		
+		mygrid.attachEvent("onRowDblClicked", function(rId,cInd){
+		    //layout.cells('a').attachURL('niveis/3/edit');
+		    //parent.atualiza_menu();
+		   // parent.myTree.saveOpenStates('aqa');
+		    //parent.layout.cells('a').collapse();
+		});
+		dp = new dataProcessor('<%= niveis_db_action_path %>');
+		dp.init(mygrid);
+		dp.setTransactionMode("POST");
+		//dp.setTransactionMode("GET", false);
+		dp.enableDataNames(true);
+		
+		layout.cells("a").setText("Niveis cadastrados");//sets the form's header
+		layout.cells("a").setHeight(200);
+		//layout.cells("b").setText("Detalhes do nivel");
+		
+		toolbar = layout.cells("a").attachToolbar({
+    		icons_path: "/assets/dhtmlx/"});
+		toolbar.loadStruct("niveis_toolbar.xml");
+	    toolbar.attachEvent("onClick", function(item) {
+			if(item == 'new_nivel') {
+				var myWins= new dhtmlXWindows();    	 	
+	    	 	myWins.createWindow('new_nivel', 240, 75, 360,180);
+	    		myWins.window('new_nivel').setText('Novo registro');
+	    		myWins.window('new_nivel').setModal(true);
+	    		myWins.window('new_nivel').denyResize();
+	    		myWins.window('new_nivel').denyPark();
+	    		
+	    		formStructure = [
+				    {type:"settings",position:"label-top"},
+				    {type: "block", name:'nivel', list:[
+					    {type: "fieldset",name:"nivel", width:300, label: "Novo registro", list:[
+					        {type: "input", width: 200, name: 'titulo', label: 'Titulo:', validate: "NotEmpty", required: true},
+							{type: "block", name:'nivel', list:[
+								{type: "button", inputLeft: -25, name: "save", value: "Adicionar"},
+								{type: "button", position:'absolute',inputLeft:85,inputTop:6, name: "cancel", value: "Cancelar"},
+							]},
+					    ]}
+					 ]},
+				];
+				
+	    		new_register = myWins.window('new_nivel').attachForm(formStructure);
+	    		new_register.attachEvent("onButtonClick", function(name, command) {
+					if(name == 'save') {
+						//alert(new_register.validate());
+						this.send('<%= nivel_new_path(:method => :post) %>', function(loader, response){
+				            myWins.window('new_nivel').close();
+				            parent.atualiza_menu();
+				        });
+						
+				        
+				        
+					}else if(name == 'cancel') {
+						myWins.window('new_nivel').close();
+					}
+				});
+			}else if (item == 'delete_nivel') {
+				var selectedRow = mygrid.getSelectedId();
+		    	if(selectedRow > 0) {
+					dhtmlx.confirm({
+					    title: "Tem certeza?",
+					    text: "Você tem certeza que deseja excluir este nivel? Todas as séries, turmas e aulas associadas a ela serão excluidas",
+					    callback: function(name) {
+					    	if(name) {
+					    		dhtmlx.confirm({
+								    title: "Tem certeza?",
+								    text: "Lembre que esta ação não podera ser desfeita, esta série e todos as turmas e aulas associadas a ela serão apagados definitivamente.",
+								    callback: function(name) {
+								    	if(name) {
+								    		mygrid.deleteSelectedItem();		    		
+									    	parent.atualiza_menu();
+								    	}
+								    }
+								});
+					    	}
+					    }
+					});
+				}else {
+					dhtmlx.message({
+					    text:"Você não selecionou nenhum registro para excluir!",
+					    expire:2000
+					});
+				}
+				
+			}
+			
+		});
+		
+	});
+</script>
+<style>
+	html, body, #gridbox {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/ 
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+</style>
+<header><div id="niveis_menuObj"></div></header>
+<div id="gridbox"></div>  

@@ -1,0 +1,198 @@
+	<script>
+		var mygrid;
+		var rowIdClicked;
+		dhtmlxEvent(window,"load", function(id){
+			var layout = new dhtmlXLayoutObject(document.body, "1C");
+			layout.cells('a').hideHeader();
+
+			toolbar = layout.cells('a').attachToolbar({
+				icons_path: "/assets/dhtmlx/",
+				items: [
+				{id: "new_user", type: "button", text: "Novo usuário", img: "new.gif"},
+				{id: "editar", type: "button", text: "Editar", img: "edit.png"},
+				{id: "delete", type: "button", text: "Excluir usuário", img: "remove.gif"}],
+					onClick:function(id){
+						onClickGrid(id);
+					},
+				});
+
+			//Context Menu
+			var contextMenu = new dhtmlXMenuObject();
+			contextMenu.setIconsPath("/assets/dhtmlx/");
+			contextMenu.renderAsContextMenu();
+			contextMenu.attachEvent("onClick",function(id) {
+				onClickGrid(id);
+			});
+			
+			contextMenu.loadFromHTML("contextArea", true);
+			
+			//Cria a listagem
+			mygrid =  layout.cells('a').attachGrid();
+			mygrid.enableAutoWidth(true);
+			mygrid.setHeader("Nome,Status, Perfil, Email, Ultima vez logado");
+			mygrid.setColumnIds("nome,status,role,email,last_sign_in_at");
+			mygrid.setColSorting("str,str,str,str,str");
+			//mygrid.setColTypes("edn,ed,ed,ed,ed,ed,ro");
+			mygrid.attachHeader("#text_filter,#combo_filter,#combo_filter,#text_filter,&nbsp;");
+			mygrid.setNumberFormat("000000",0,"","");
+			mygrid.enableEditEvents(false,false,false);
+			mygrid.enableStableSorting(true);
+			mygrid.enableContextMenu(contextMenu);
+			mygrid.attachEvent("onRightClick",function (rowId, cellId) {
+				rowIdClicked = rowId;
+				return true;
+			});
+			mygrid.init();
+			mygrid.load('<%= users_path(:format =>:xml) %>','xml');
+
+			
+			
+			//Conexão com o servidor
+			dp = new dataProcessor('<%= users_db_action_path %>');
+			dp.enableDataNames(true);
+			//dp.enablePartialDataSend(true);
+			
+			dp.init(mygrid);
+			dp.setTransactionMode("POST");
+			dp.defineAction("error", retorno_erro);
+
+
+		});
+
+	function retorno_erro(retorno) {
+		dhtmlx.alert({
+			title:"Ops, algo deu errado!",
+			type:"alert-error",
+			text:"O seguinte erro aconteceu: "+retorno.firstChild.data
+		});
+		mygrid.updateFromXML('<%= users_path(:format =>:xml) %>');
+	}
+	function onClickGrid(id) {
+		if(id == 'new_user' || id == 'editar') {
+			var myWins= new dhtmlXWindows();
+			myWins.createWindow('new_user', 240, 75, 400,380);
+			myWins.window('new_user').setText('Novo Usuário do sistema');
+			myWins.window('new_user').setModal(true);
+			myWins.window('new_user').denyResize();
+			myWins.window('new_user').denyPark();
+
+			formStructure = [
+					{type:"settings",position:"label-top"},
+					{type: "block", name:'nivel', list:[
+					{type: "fieldset",name:"nivel",width:350, label: "Novo registro", list:[
+
+						{type: "input", width: 310, name: 'nome', label: 'Nome', validate: "NotEmpty", required: true},
+						{type: "input", width: 310, name: 'email', label: 'Email', validate: "NotEmpty", required: true},
+						{type: "password", width: 310, name: 'password', label: 'Senha'},
+						{type: "select", width: 310, name: 'role', label: 'Perfil', validate: "NotEmpty", required: true, options:[
+							{text: "Admin", value: "admin"},
+				            {text: "Secretaria", value: "scretaria"},
+				            {text: "Professor", value: "professor"}
+						]},
+						{type: "select", width: 310, name: 'status', label: 'Status', validate: "NotEmpty", required: true, options:[
+							{text: "Ativo", value: "Ativo"},
+				            {text: "Inativo", value: "Inativo"}
+						]},
+						{type: "block", name:'nivel', list:[
+							{type: "button", name: "save", value: "Salvar",inputTop:10,inputLeft:-30},
+							{type: "button", position:'absolute',inputLeft:80,inputTop:16, name: "cancel", value: "Cancelar"}
+						]},
+					]}
+				]},
+			];
+			new_user = myWins.window('new_user').attachForm(formStructure);
+			if(id == 'new_user') {
+				new_user.attachEvent("onButtonClick", function(name, command) {
+					if(name == 'save') {
+						alert('foi');
+						new_user.send('<%= users_path(:method => :post) %>', function(loader, response){
+							myWins.window('new_user').close();
+							mygrid.updateFromXML('<%= users_path(:format =>:xml) %>');
+						});
+					}else if(name == 'cancel') {
+						myWins.window('new_user').close();
+					}
+				});
+			}else if(id == 'editar') {
+				if(rowIdClicked == null) {
+					rowIdClicked = mygrid.getSelectedId();
+				}
+				//Carrega os dados 
+				new_user.load('/users/'+rowIdClicked);
+				new_user.attachEvent("onButtonClick", function(name, command) {
+						if(name == 'save') {
+							this.send('<%= update_user_path(:method => :patch)  %>', function(loader, response){
+								if(loader.xmlDoc.status == 400) {
+									var erro = $.parseJSON(response)
+									dhtmlx.alert({
+										title:"Não foi possivel atualizar o registro.",
+										type:"alert-error",
+										text: erro.message
+									});
+								}else {
+									var messagem = $.parseJSON(response)
+									dhtmlx.message({
+										text:messagem.message,
+										expire:2000
+									});
+							      	myWins.window('new_user').close();
+							      	mygrid.updateFromXML('<%= users_path(:format =>:xml) %>');
+								}
+								rowIdClicked = null;
+					    });
+						}else if(name == 'cancel') {
+							myWins.window('new_user').close();
+						}
+					});
+			}
+			
+		}else if(id== 'delete') {
+			if(rowIdClicked == null) {
+				rowIdClicked = mygrid.getSelectedId();
+			}
+			
+			if(rowIdClicked > 0) {
+				dhtmlx.confirm({
+					title: "Tem certeza?",
+					text: "Tem certeza que deseja remover este usuário?",
+					callback: function(name) {
+						if(name) {
+							mygrid.deleteRow(rowIdClicked);
+						}
+					}
+				});
+			}else {
+				dhtmlx.message({
+					text:"Você não selecionou nenhum registro para excluir!",
+					expire:2000
+				});
+			}
+		}else if(id == 'desativar') {
+
+
+
+			dhtmlx.message({
+				text:"Usuário desativado!",
+				expire:2000
+			});
+		}
+ 	}
+
+</script>
+
+<style>
+	html, body, #gridbox, #contextArea {
+		width: 100%;      /*provides the correct work of a full-screen layout*/
+		height: 100%;     /*provides the correct work of a full-screen layout*/
+		overflow: hidden; /*hides the default body's space*/
+		margin: 0px;      /*hides the body's scrolls*/
+	}
+</style>
+<div id="contextArea">
+	<!--<div id="m1" text="File"> // the first top menu item-->
+        <div id="editar" text="Editar"></div>
+        <div id="delete" text="Excluir"></div> 
+        <!-- <div id="ms1" type="separator"></div> // a separator    
+        <div id="desativar" text="Desativar Usuário"></div> //the second child item -->  
+     <!--</div>   -->
+</div>

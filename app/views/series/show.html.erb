@@ -1,0 +1,169 @@
+<%= csrf_meta_tags %>
+<script>
+	dhtmlxEvent(window,"load", function(id){
+		//var layout = new dhtmlXLayoutObject(document.body, "2E");
+		var layout = new dhtmlXLayoutObject(document.body, "1C");
+
+		//layout.cells("a").setText("Detalhes da série");//sets the form's header
+		var tabbar = layout.cells("a").attachTabbar({
+			icons_path: "/assets/dhtmlx/"
+		});
+		var tab = tabbar.addTab(
+	    'detalhes_serie',       // id
+	    'Detalhes da série',    // tab text
+	    null,       // auto width
+	    null,       // last position
+	    false,      // inactive
+	    false       // disable close button <-- this one
+		);
+		//Seta a tab como ativa
+		tabbar.tabs('detalhes_serie').setActive();
+		//Configura o formulario
+		formStructure = [
+		    {type:"settings",position:"label-top"},
+		    {type: "block", width: 900, name:'nivel', list:[
+			    {type: "fieldset",name:"nivel", width:900, label: "Detalhes", list:[
+			        {type: "hidden", name: 'id'},
+			        {type: "input", width: 300, name: 'titulo', label: 'Titulo:'},
+					{type: "button", name: "save", value: "Salvar mudanças"},
+			    ]}
+			 ]}
+		];
+
+		//Adiciona a tab com o formulario
+		myForm = tabbar.cells('detalhes_serie').attachForm(formStructure);
+		myForm.attachEvent("onButtonClick", function(name, command) {
+			if(name == 'save') {
+				//dp.setDataColumns(['nivel',true,true,true]);
+				//dp.sendData('nivel');
+				//myForm.send('update');
+				this.send('<%= update_series_path(@serie) %>', function(loader, response) {
+					dhtmlx.message({
+					    text:"Registro atualizado com sucesso!",
+					    expire:2000
+					});
+				});
+				//parent.myTree.loadOpenStates('aqa');
+				parent.atualiza_menu();
+
+			}
+		});
+
+		//Carrega os dados no formulario
+		myForm.load('<%= edit_series_path(@serie, :format => 'xml')  %>');
+
+		var tab_listagem = tabbar.addTab(
+		    'lista_turmas',       // id
+		    'Lista de turmas',    // tab text
+		    null,       // auto width
+		    null,       // last position
+		    false,      // inactive
+		    false       // disable close button <-- this one
+		);
+
+
+		mygrid =  tabbar.cells("lista_turmas").attachGrid();
+		mygrid.load('<%= series_turmas_series_path(@serie, :format => 'xml') %>','xml');
+		mygrid.enableAutoWidth(true);
+		mygrid.enableEditEvents(false,false,false);
+		mygrid.init();
+
+		dp = new dataProcessor('<%= turmas_db_action_path %>');
+		dp.init(mygrid);
+		dp.setTransactionMode("POST");
+		//dp.setTransactionMode("GET", false);
+		dp.enableDataNames(true);
+
+
+		toolbar_grid = tabbar.cells("lista_turmas").attachToolbar({
+    		icons_path: "/assets/dhtmlx/",
+		    items:[
+		    		{id: "new_turma", type: "button", text: "Nova turma", img: "new.gif"},
+		        {id: "delete_turma", type: "button", text:'Excluir', img: "trash_delete.gif"},
+		    ],
+		    onClick:function(id){
+		    	if(id == 'new_turma') {
+		    	 	var myWins= new dhtmlXWindows();
+		    	 	myWins.createWindow('new_turma', 240, 75, 360,180);
+		    		myWins.window('new_turma').setText('Novo registro');
+		    		myWins.window('new_turma').setModal(true);
+		    		myWins.window('new_turma').denyResize();
+		    		myWins.window('new_turma').denyPark();
+
+		    		formStructure = [
+					    {type:"settings",position:"label-top"},
+					    {type: "block", name:'nivel', list:[
+						    {type: "fieldset",name:"nivel", width:300, label: "Novo registro", list:[
+						        {type: "hidden", name: 'serie_id', value: '<%= @serie.id %>'},
+						        {type: "input", width: 200, name: 'titulo', label: 'Titulo:', validate: "NotEmpty", required: true},
+								{type: "block", name:'nivel', list:[
+									{type: "button", inputLeft: -25, name: "save", value: "Adicionar"},
+									{type: "button", position:'absolute',inputLeft:85,inputTop:6, name: "cancel", value: "Cancelar"},
+								]},
+						    ]}
+						 ]},
+					];
+
+		    		new_register = myWins.window('new_turma').attachForm(formStructure);
+		    		new_register.attachEvent("onButtonClick", function(name, command) {
+						if(name == 'save') {
+							//alert(new_register.validate());
+							this.send('<%= turmas_new_path(:method => :post) %>', function(loader, response){
+					           myWins.window('new_turma').close();
+					           mygrid.updateFromXML('<%= series_turmas_series_path(@serie, :format => 'xml') %>');
+					           parent.atualiza_menu();
+					        });
+
+
+
+						}else if(name == 'cancel') {
+							myWins.window('new_turma').close();
+						}
+					});
+
+
+		    	 }else if (id == 'delete_turma') {
+					var selectedRow = mygrid.getSelectedId();
+			    	if(selectedRow > 0) {
+						dhtmlx.confirm({
+						    title: "Tem certeza?",
+						    text: "Você tem certeza que deseja excluir esta turma? Todas as aulas associadas a ela serão excluidas",
+						    callback: function(name) {
+						    	if(name) {
+						    		dhtmlx.confirm({
+									    title: "Tem certeza?",
+									    text: "Lembre que esta ação não podera ser desfeita, esta turma e todos as aulas e aulnos associadas a ela serão perdidos.",
+									    callback: function(name) {
+									    	if(name) {
+									    		mygrid.deleteSelectedItem();
+										    	parent.atualiza_menu();
+									    	}
+									    }
+									});
+						    	}
+						    }
+						});
+					}else {
+						dhtmlx.message({
+						    text:"Você não selecionou nenhum registro para excluir!",
+						    expire:2000
+						});
+					}
+
+				}
+    		}
+		});
+
+	});
+</script>
+<style>
+	html, body, #gridbox {
+	        width: 100%;      /*provides the correct work of a full-screen layout*/
+	        height: 100%;     /*provides the correct work of a full-screen layout*/
+	        overflow: hidden; /*hides the default body's space*/
+	        margin: 0px;      /*hides the body's scrolls*/
+	    }
+</style>
+
+<div id="gridbox"></div>
+<div id='form_container'></div>
